@@ -1,3 +1,4 @@
 data_out/*
 logs/*
 .DS_Store
+.Rhistory

@@ -68,6 +68,10 @@ scrape_page <- function(ad_id) {
   address_split <- strsplit(ad[["Aadress"]], ", ")
   address_split
   for(i in 1:4) {
+    print(length(address_split))
+    if(length(address_split[[1]]) < 4) {
+      address_split[[1]] <- c(rep(c(NA), 4-length(address_split[[1]])), address_split[[1]])
+    }
     field_name <- sprintf("Aadress.%d", i)
     if(!is.na(address_split[[1]][i]))
       ad[[field_name]] <- address_split[[1]][i]

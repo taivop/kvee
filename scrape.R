@@ -30,14 +30,19 @@ tryCatch({
 # Track last successful ID
 id_last_success <- NA
 
+# Save every n ads
+save_every_n <- 3000
+
 # ---- Main loop ----
 loginfo("Started fetching ads...")
 for(ad_id_reached in id_start:id_end) {
   loginfo(sprintf("Scraping %d (%d/%d)", ad_id_reached, ad_id_reached-id_start+1,
                 id_end-id_start+1))
   Sys.sleep(0.05)
+  
+  # Get ad
   tryCatch({
-    if(ad_id_reached==id_start) {
+    if(!exists("ads")) {
       ads <- as.data.frame(scrape_page(id_start), stringsAsFactors=FALSE)
       id_last_success <- ad_id_reached
     } else {
@@ -47,6 +52,19 @@ for(ad_id_reached in id_start:id_end) {
     }
   }, error=function(e) {
     logerror(sprintf("Error at %d: %s", ad_id_reached, e))
+  })
+  
+  # Save if we are at a checkpoint
+  tryCatch({
+    if(ad_id_reached %% save_every_n == 0) {
+      file_name <- sprintf("data_out/data_%dto%d.csv", id_start, ad_id_reached)
+      write.table(ads, file=file_name, sep=";")
+      loginfo(sprintf("Successfully saved at checkpoint %d.", ad_id_reached))
+    }
+  }, error=function(e) {
+    logerror(sprintf("Could not save at checkpoint %d: %s", ad_id_reached, e))
+  }, warning=function(w) {
+    logerror(sprintf("Warning saving at checkpoint %d: %s", ad_id_reached, w))
   })
 }
 loginfo("Done.")

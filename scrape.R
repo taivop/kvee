@@ -44,11 +44,11 @@ for(ad_id_reached in id_start:id_end) {
   tryCatch({
     if(!exists("ads")) {
       ads <- as.data.frame(scrape_page(id_start), stringsAsFactors=FALSE)
-      id_last_success <- ad_id_reached
     } else {
       ad <- scrape_page(ad_id_reached)
       names(ad) <- names(ads)
       ads <- rbind(ads, ad)
+      id_last_success
     }
   }, error=function(e) {
     logerror(sprintf("Error at %d: %s", ad_id_reached, e))

@@ -57,7 +57,7 @@ for(ad_id_reached in id_start:id_end) {
   # Save if we are at a checkpoint
   tryCatch({
     if((ad_id_reached-id_start) %% save_every_n == 0 && ad_id_reached != id_start) {
-      file_name <- sprintf("data_out/data_%dto%d.csv", id_start, ad_id_reached)
+      file_name <- sprintf("data_out/data_%dto%d.csv", id_start, id_end)
       write.table(ads, file=file_name, sep=";")
       loginfo(sprintf("Successfully saved at checkpoint %d.", ad_id_reached))
     }

@@ -29,6 +29,6 @@ for(i in 1:length(files)) {
 # Save combined table
 combined_file_path <- sprintf("%s%s", dir_path, "combined.csv")
 loginfo(sprintf("Saving combined table to %s...", combined_file_path))
-write.table(combined, file=file_path, sep=";")
+write.table(combined, file=combined_file_path, sep=";")
 loginfo(sprintf("Done."))
 

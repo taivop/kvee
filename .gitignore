@@ -1,4 +1,5 @@
 data_out/*
+data_cleaned/*
 logs/*
 .DS_Store
 .Rhistory

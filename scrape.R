@@ -77,25 +77,6 @@ success_rate = 100 * num_success / num_tried
 loginfo(sprintf("Scraped %d out of %d tries. Success rate %.1f%%.",
                 num_success, num_tried, success_rate))
 
-# Fix data types
-# ads <- ads %>%
-#   mutate(Hind=as.numeric(Hind),
-#          Tube=as.numeric(Tube),
-#          Üldpind=as.numeric(sub(" m²", "", Üldpind)),
-#          Seisukord=as.factor(Seisukord),
-#          Energiamärgis=as.factor(ifelse(Energiamärgis=="-", NA, Energiamärgis)),
-#          Korrus=as.numeric(Korrus),
-#          Korruseid=as.numeric(Korruseid),
-#          Ehitusaasta=as.numeric(Ehitusaasta),
-#          Tüüp=as.factor(Tüüp),
-#          Kuupäev=as.Date(Kuupäev, "%d.%m.%y")) %>%
-#   mutate_each(funs(as.factor), Aadress.1:Aadress.4)
-# 
-# # Data constraints
-# ads <- ads %>%
-#   mutate(Ehitusaasta=ifelse(Ehitusaasta < 1000, NA, Ehitusaasta),
-#          Üldpind=ifelse(Üldpind > 5000, NA, Üldpind))
-
 # ---- Save results ----
 tryCatch({
   file_name <- sprintf("data_out/data_%dto%d.csv", id_start, ad_id_reached)

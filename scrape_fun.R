@@ -11,12 +11,14 @@ scrape_page <- function(ad_id) {
   
   ad$Pealkiri <- page %>%
     html_node("h1.title") %>%
-    html_text()
+    html_text() %>%
+    gsub("\"", " ", .)
   
   ad$Tekst <- page %>%
     html_node(".object-article-body") %>%
     html_text() %>%
-    gsub("\\s+", " ", .)
+    gsub("\\s+", " ", .) %>%
+    gsub("\"", " ", .)
   
   ad$Hind <- page %>%
     html_node("p.object-price strong") %>%

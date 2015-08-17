@@ -1,4 +1,5 @@
 library(logging)
+library(dplyr)
 
 # Setup logging to console
 basicConfig()
@@ -16,6 +17,11 @@ for(i in 1:length(files)) {
                          quote="\"", colClasses="character")
   rm(p)
   
+  # Drop ad text from new table and remove quotes from title
+  new_tbl <- new_tbl %>%
+    select(-Tekst) %>%
+    mutate(Pealkiri=gsub("\"", " ", Pealkiri))
+  
   if(i == 1) {
     combined <- new_tbl
   }
@@ -29,6 +35,6 @@ for(i in 1:length(files)) {
 # Save combined table
 combined_file_path <- sprintf("%s%s", dir_path, "combined.csv")
 loginfo(sprintf("Saving combined table to %s...", combined_file_path))
-write.table(combined, file=combined_file_path, sep=";")
+write.csv2(combined, file=combined_file_path, row.names=FALSE)
 loginfo(sprintf("Done."))
 

@@ -8,10 +8,10 @@ ads <- ads_raw %>%
   mutate(Kuupäev=as.Date(Kuupäev, "%d.%m.%y")) %>%
   filter(Kuupäev >= as.Date("2005-01-01") &
            Tüüp == "Müüa korter") %>%
-  filter(Hind < 10000000) %>%
-  select(-Aadress.1, -Aadress.2, -Aadress.3, -Aadress.4)
+  select(-Aadress.1, -Aadress.2, -Aadress.3, -Aadress.4) %>%
+  sample_n(100000)
 
-#rm(ads_raw)
+rm(ads_raw)
 
 # Fix data types
 ads <- ads %>%
@@ -28,7 +28,8 @@ ads <- ads %>%
 # Data constraints
 ads <- ads %>%
   mutate(Ehitusaasta=ifelse(Ehitusaasta > 1000, Ehitusaasta, NA),
-         Üldpind=ifelse(Üldpind > 1000, NA, Üldpind))
+         Üldpind=ifelse(Üldpind > 1000, NA, Üldpind)) %>%
+  filter(Hind <= 10000000)
 
 # ---- Part-of-city detection, Tallinn ----
 part_of_city <- ads %>%

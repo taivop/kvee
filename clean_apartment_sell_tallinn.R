@@ -9,7 +9,7 @@ ads <- ads_raw %>%
   filter(Kuupäev >= as.Date("2005-01-01") &
            Tüüp == "Müüa korter") %>%
   select(-Aadress.1, -Aadress.2, -Aadress.3, -Aadress.4) %>%
-  sample_n(100000)
+  sample_n(500000)
 
 rm(ads_raw)
 
@@ -25,7 +25,7 @@ ads <- ads %>%
          Korrus=as.numeric(Korrus),
          Korruseid=as.numeric(Korruseid))
 
-# Data constraints
+# Data constraints and subsetting again
 ads <- ads %>%
   mutate(Ehitusaasta=ifelse(Ehitusaasta > 1000, Ehitusaasta, NA),
          Üldpind=ifelse(Üldpind > 1000, NA, Üldpind)) %>%
@@ -42,7 +42,7 @@ part_of_city <- ads %>%
          Mustamäe=regexpr("Mustamäe", Aadress),
          Nõmme=regexpr("Nõmme", Aadress),
          Pirita=regexpr("Pirita", Aadress),
-         PõhjaTallinn=regexpr("Põhja-Tallinn", Aadress),
+         `Põhja-Tallinn`=regexpr("Põhja-Tallinn", Aadress),
          Vanalinn=regexpr("Vanalinn", Aadress)
   ) %>%
   melt(measure.vars=3:11, variable.name="Linnaosa", value.name="Positsioon") %>%

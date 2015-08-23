@@ -6,10 +6,10 @@ ads_raw <- read.csv2("data_out/combined.csv", colClasses="character")
 # Select subset of ads and columns
 ads <- ads_raw %>%
   mutate(Kuupäev=as.Date(Kuupäev, "%d.%m.%y")) %>%
-  filter(Kuupäev >= as.Date("2005-01-01") &
-           Tüüp == "Müüa korter") %>%
+  filter(Kuupäev >= as.Date("2012-01-01") &
+           Tüüp == "Anda üürile korter") %>%
   select(-Aadress.1, -Aadress.2, -Aadress.3, -Aadress.4) %>%
-  sample_n(500000)
+  sample_n(200000)
 
 rm(ads_raw)
 
@@ -80,7 +80,7 @@ cleaned <- ads %>%
   na.omit()
 
 # ---- Save ----
-write.csv2(cleaned, "data_cleaned/apartment_sell_tallinn.csv")
+write.csv2(cleaned, "data_cleaned/apartment_rent_tallinn.csv")
 
 
   

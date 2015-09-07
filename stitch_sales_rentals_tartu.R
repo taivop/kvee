@@ -9,7 +9,8 @@ sells <- rbind(sells1, sells2)
 
 # Add type of ad
 sells <- sells %>%
-  mutate(Tüüp="Müüa")
+  mutate(Tüüp="Müüa") %>%
+  filter(Hind <= 10000000)
 rentals <- rentals %>%
   mutate(Tüüp="Anda üürile") %>%
   filter(Hind <= 10000)

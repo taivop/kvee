@@ -1,8 +1,11 @@
 library(dplyr)
 
 # Get files
-sells <- read.csv2("data_cleaned/apartment_sell_tartu.csv")
+sells1 <- read.csv2("data_cleaned/apartment_sell_tartu_1.csv")
+sells2 <- read.csv2("data_cleaned/apartment_sell_tartu_2.csv")
 rentals <- read.csv2("data_cleaned/apartment_rent_tartu.csv")
+
+sells <- rbind(sells1, sells2)
 
 # Add type of ad
 sells <- sells %>%

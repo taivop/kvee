@@ -6,7 +6,7 @@ ads_raw <- read.csv2("data_out/combined.csv", colClasses="character")
 # Select subset of ads and columns
 ads <- ads_raw %>%
   mutate(Kuupäev=as.Date(Kuupäev, "%d.%m.%y")) %>%
-  filter(Kuupäev >= as.Date("2012-01-01") &
+  filter(Kuupäev >= as.Date("2012-01-01") & Kuupäev < as.Date("2014-01-01") &
            Tüüp == "Müüa korter") %>%
   filter(grepl("Tartu", Aadress)) %>%
   select(-Aadress.1, -Aadress.2, -Aadress.3, -Aadress.4)

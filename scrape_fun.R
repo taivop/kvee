@@ -1,8 +1,16 @@
 library(dplyr)
 library(rvest)
+library(stringr)
+
+get_coordinates = function(link) {
+  page <- read_html("http://www.kv.ee/?act=object.map&object_id=2680423")
+  js_text <- page %>% html_node("script") %>% html_text()
+  coords <- str_extract(js_text, "(?=LatLng\\().*(?<=\\))") %>% str_sub(8, -2)
+  return(coords)
+}
 
 scrape_page <- function(ad_id) {
-  page <- html(sprintf("http://www.kv.ee/%d", ad_id))
+  page <- read_html(sprintf("http://www.kv.ee/%d", ad_id))
   
   # Parse data points
   ad <- list()
@@ -24,6 +32,19 @@ scrape_page <- function(ad_id) {
     html_node("p.object-price strong") %>%
     html_text() %>%
     gsub("\\s+|€", "", .)
+  
+  # If coordinates exist
+  tryCatch({
+    gmap_link <- page %>%
+      html_node("#gmap_img a") %>%
+      html_attr("href")
+    map_link = sprintf("http://kv.ee%s", gmap_link)
+    print( get_coordinates(map_link))
+    ad$Koordinaadid = get_coordinates(map_link)
+    print( get_coordinates(map_link))
+  }, error=function(cond) {
+    ad$Koordinaadid = NA
+  }, warning=function(cond) {}, finally={})
   
   table_rows <- page %>%
     html_nodes(".object-data-meta tbody tr")

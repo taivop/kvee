@@ -1,6 +1,6 @@
-id_start=2597176
-id_end=$((2730000-1))
-step=50000
+id_start=2747175
+id_end=$((2887616))
+step=25000
 
 for i in `seq -f %.0f $id_start $step $id_end`
 do

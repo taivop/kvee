@@ -1,9 +1,16 @@
 library(dplyr)
 library(rvest)
 library(stringr)
+#library(curl)
+library(httr)
+
+download_page <- function(url) {
+  res <- GET(url)
+  return(read_html(content(res, "text")))
+}
 
 get_coordinates = function(object_id) {
-  page <- read_html(paste0("http://www.kv.ee/?act=object.map&object_id=", object_id))
+  page <- download_page(paste0("http://www.kv.ee/?act=object.map&object_id=", object_id))
   js_text <- page %>% html_node("script") %>% html_text()
   coords <- str_extract(js_text, "(?=LatLng\\().*(?<=\\))") %>% str_sub(8, -2)
   return(coords)
@@ -11,7 +18,8 @@ get_coordinates = function(object_id) {
 
 scrape_page <- function(ad_id) {
   
-  page <- read_html(sprintf("http://www.kv.ee/%d", ad_id))
+  page <- download_page(sprintf("http://kinnisvaraportaal-kv-ee.postimees.ee/index.php?act=object.show&object_id=%d", ad_id))
+  #http://kinnisvaraportaal-kv-ee.postimees.ee/index.php?act=object.show&object_id=1500000
   
   # Parse data points
   ad <- list()

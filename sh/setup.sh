@@ -1,12 +1,11 @@
-sudo apt-get -y update
-sudo apt-get -y install libopenblas-base 
-sudo apt-get -y install littler
-sudo apt-get -y install libssl-dev libcurl4-openssl-dev libxml2-dev
-
 # Add CRAN source
 sudo sh -c 'echo "deb http://cran.rstudio.com/bin/linux/ubuntu trusty/" >> /etc/apt/sources.list'
 gpg --keyserver keyserver.ubuntu.com --recv-key E084DAB9
 gpg -a --export E084DAB9 | sudo apt-key add -
+
+sudo apt-get -y update
+sudo apt-get -y install libopenblas-base 
+sudo apt-get -y install libssl-dev libcurl4-openssl-dev libxml2-dev
 
 sudo apt-get -y install r-base r-base-dev
 sudo R --no-save < r/install_dependencies.R

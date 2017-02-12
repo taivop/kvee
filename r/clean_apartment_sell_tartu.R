@@ -1,16 +1,17 @@
 library(dplyr)
 library(reshape2)
 
-ads_raw <- read.csv2("data_out/combined.csv", colClasses="character")
+ads_raw <- read.csv2("../data_out/combined.csv", colClasses="character")
 
 # Select subset of ads and columns
 ads <- ads_raw %>%
   mutate(Kuupäev=as.Date(Kuupäev, "%d.%m.%y")) %>%
-  filter(Kuupäev >= as.Date("2012-01-01") &
-           Tüüp == "Anda üürile korter") %>%
+  filter(Kuupäev >= as.Date("2012-01-01") & Kuupäev < as.Date("2014-01-01") &
+           Tüüp == "Müüa korter") %>%
+  filter(grepl("Tartu", Aadress)) %>%
   select(-Aadress.1, -Aadress.2, -Aadress.3, -Aadress.4)
 
-rm(ads_raw)
+#rm(ads_raw)
 
 # Fix data types
 ads <- ads %>%
@@ -30,21 +31,28 @@ ads <- ads %>%
          Üldpind=ifelse(Üldpind > 1000, NA, Üldpind)) %>%
   filter(Hind <= 10000000 & Hind >= 100)
 
-# ---- Part-of-city detection, Tallinn ----
+# ---- Part-of-city detection, Tartu ----
 part_of_city <- ads %>%
   select(ID, Aadress) %>%
-  filter(grepl("Tallinn", Aadress)) %>%  # Location is in Tallinn
-  mutate(Haabersti=regexpr("Haabersti", Aadress),
+  mutate(Annelinn=regexpr("Annelinn", Aadress),
+         Ihaste=regexpr("Ihaste", Aadress),
+         Jaamamõisa=regexpr("Jaamamõisa", Aadress),
+         Karlova=regexpr("Karlova", Aadress),
          Kesklinn=regexpr("Kesklinn", Aadress),
-         Kristiine=regexpr("Kristiine", Aadress),
-         Lasnamäe=regexpr("Lasnamäe", Aadress),
-         Mustamäe=regexpr("Mustamäe", Aadress),
-         Nõmme=regexpr("Nõmme", Aadress),
-         Pirita=regexpr("Pirita", Aadress),
-         `Põhja-Tallinn`=regexpr("Põhja-Tallinn", Aadress),
-         Vanalinn=regexpr("Vanalinn", Aadress)
+         Maarjamõisa=regexpr("Maarjamõisa", Aadress),
+         `Raadi-Kruusamäe`=regexpr("Raadi-Kruusamäe", Aadress),
+         Ropka=regexpr("Ropka", Aadress),
+         `Ropka tööstusrajoon`=regexpr("Ropka tööstusrajoon", Aadress),
+         Ränilinn=regexpr("Ränilinn", Aadress),
+         Supilinn=regexpr("Supilinn", Aadress),
+         Tammelinn=regexpr("Tammelinn", Aadress),
+         Tähtvere=regexpr("Tähtvere", Aadress),
+         Vaksali=regexpr("Vaksali", Aadress),
+         Variku=regexpr("Variku", Aadress),
+         Veeriku=regexpr("Veeriku", Aadress),
+         Ülejõe=regexpr("Ülejõe", Aadress)
   ) %>%
-  melt(measure.vars=3:11, variable.name="Linnaosa", value.name="Positsioon") %>%
+  melt(measure.vars=3:19, variable.name="Linnaosa", value.name="Positsioon") %>%
   # Assign only one part-of-city to each ad
   filter(Positsioon > -1) %>%
   group_by(ID, Linnaosa) %>%
@@ -54,7 +62,7 @@ part_of_city <- ads %>%
 # Join back part-of-city info
 ads <- ads %>%
   right_join(part_of_city, by="ID")
-  
+
 # ---- Remove weird 'Seisukord' values ----
 ads <- ads %>%
   filter(Seisukord != "post-USSR constructure")
@@ -67,11 +75,15 @@ indeks_reference <- indeks_lookup %>%
   filter(Kuupäev == as.Date("2015-08-01")) %>%
   .[["Indeks"]]
 
+indeks_lookup <- indeks_lookup %>%
+  rename(Kuupaev=Kuupäev)
+
 # Calculate adjusted price
 ads <- ads %>%
-  left_join(indeks_lookup, by="Kuupäev") %>%
-  mutate(HindKohandatud = (Hind * indeks_reference / Indeks))
-
+  rename(Kuupaev=Kuupäev) %>%
+  left_join(indeks_lookup, by="Kuupaev") %>%
+  mutate(HindKohandatud = (Hind * indeks_reference / Indeks)) %>%
+  rename(Kuupäev=Kuupaev)
 # Select only useful variables and drop rows with missing data
 cleaned <- ads %>%
   select(ID, Hind, HindKohandatud, Linnaosa, Üldpind, Seisukord, Tube, Korrus, Korruseid,
@@ -79,7 +91,6 @@ cleaned <- ads %>%
   na.omit()
 
 # ---- Save ----
-write.csv2(cleaned, "data_cleaned/apartment_rent_tallinn.csv")
+write.csv2(cleaned, "../data_cleaned/apartment_sell_tartu.csv")
 
 
-  

@@ -1,17 +1,17 @@
 library(dplyr)
 library(reshape2)
 
-ads_raw <- read.csv2("data_out/combined.csv", colClasses="character")
+ads_raw <- read.csv2("../data_out/combined.csv", colClasses="character")
 
 # Select subset of ads and columns
 ads <- ads_raw %>%
   mutate(Kuupäev=as.Date(Kuupäev, "%d.%m.%y")) %>%
-  filter(Kuupäev >= as.Date("2012-01-01") & Kuupäev < as.Date("2014-01-01") &
-           Tüüp == "Müüa korter") %>%
+  filter(Kuupäev >= as.Date("2012-01-01") &
+           Tüüp == "Anda üürile korter") %>%
   filter(grepl("Tartu", Aadress)) %>%
   select(-Aadress.1, -Aadress.2, -Aadress.3, -Aadress.4)
 
-#rm(ads_raw)
+rm(ads_raw)
 
 # Fix data types
 ads <- ads %>%
@@ -29,11 +29,12 @@ ads <- ads %>%
 ads <- ads %>%
   mutate(Ehitusaasta=ifelse(Ehitusaasta > 1000, Ehitusaasta, NA),
          Üldpind=ifelse(Üldpind > 1000, NA, Üldpind)) %>%
-  filter(Hind <= 10000000 & Hind >= 100)
+  filter(Hind <= 10000 & Hind >= 100)
 
 # ---- Part-of-city detection, Tartu ----
 part_of_city <- ads %>%
   select(ID, Aadress) %>%
+  filter(grepl("Tartu", Aadress)) %>%
   mutate(Annelinn=regexpr("Annelinn", Aadress),
          Ihaste=regexpr("Ihaste", Aadress),
          Jaamamõisa=regexpr("Jaamamõisa", Aadress),
@@ -51,7 +52,7 @@ part_of_city <- ads %>%
          Variku=regexpr("Variku", Aadress),
          Veeriku=regexpr("Veeriku", Aadress),
          Ülejõe=regexpr("Ülejõe", Aadress)
-  ) %>%
+         ) %>%
   melt(measure.vars=3:19, variable.name="Linnaosa", value.name="Positsioon") %>%
   # Assign only one part-of-city to each ad
   filter(Positsioon > -1) %>%
@@ -91,6 +92,6 @@ cleaned <- ads %>%
   na.omit()
 
 # ---- Save ----
-write.csv2(cleaned, "data_cleaned/apartment_sell_tartu.csv")
+write.csv2(cleaned, "../data_cleaned/apartment_rent_tartu.csv")
 
 

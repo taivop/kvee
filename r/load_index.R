@@ -1,7 +1,7 @@
 library(readxl)
 library(dplyr)
 
-indeks <- read_excel("indeks/kvindeks.xlsx") %>%
+indeks <- read_excel("../indeks/kvindeks.xlsx") %>%
   select(Kuupäev, Indeks) %>%
   mutate(Kuupäev=as.Date(Kuupäev, "%d.%m.%y"),
          Indeks=as.numeric(Indeks))

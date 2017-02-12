@@ -5,7 +5,7 @@ library(dplyr)
 basicConfig()
 
 # Get dir contents
-dir_path <- "data_out/"
+dir_path <- "../data_out/"
 files <- list.files(dir_path, pattern="data_.*")
 
 for(i in 1:length(files)) {

@@ -1,8 +1,8 @@
 library(dplyr)
 
 # Get files
-sells <- read.csv2("data_cleaned/apartment_sell_tallinn.csv")
-rentals <- read.csv2("data_cleaned/apartment_rent_tallinn.csv")
+sells <- read.csv2("../data_cleaned/apartment_sell_tallinn.csv")
+rentals <- read.csv2("../data_cleaned/apartment_rent_tallinn.csv")
 
 # Add type of ad
 sells <- sells %>%
@@ -17,4 +17,4 @@ combined <- rbind(sells, rentals) %>%
   select(-X)
 
 # Save results
-write.csv2(combined, file="data_cleaned/apartment_both_tallinn.csv", row.names=FALSE)
+write.csv2(combined, file="../data_cleaned/apartment_both_tallinn.csv", row.names=FALSE)

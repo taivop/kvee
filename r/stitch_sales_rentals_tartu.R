@@ -1,9 +1,9 @@
 library(dplyr)
 
 # Get files
-sells1 <- read.csv2("data_cleaned/apartment_sell_tartu_1.csv")
-sells2 <- read.csv2("data_cleaned/apartment_sell_tartu_2.csv")
-rentals <- read.csv2("data_cleaned/apartment_rent_tartu.csv")
+sells1 <- read.csv2("../data_cleaned/apartment_sell_tartu_1.csv")
+sells2 <- read.csv2("../data_cleaned/apartment_sell_tartu_2.csv")
+rentals <- read.csv2("../data_cleaned/apartment_rent_tartu.csv")
 
 sells <- rbind(sells1, sells2)
 
@@ -21,4 +21,4 @@ combined <- rbind(sells, rentals) %>%
   select(-X)
 
 # Save results
-write.csv2(combined, file="data_cleaned/apartment_both_tartu.csv", row.names=FALSE)
+write.csv2(combined, file="../data_cleaned/apartment_both_tartu.csv", row.names=FALSE)

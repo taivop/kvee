@@ -42,7 +42,7 @@ time_start <- Sys.time()
 for(ad_id_reached in id_start:id_end) {
   loginfo(sprintf("Scraping %d (%d/%d)", ad_id_reached, ad_id_reached-id_start+1,
                 id_end-id_start+1))
-  Sys.sleep(0.05)
+  #Sys.sleep(0.05)
   
   # Get ad
   tryCatch({

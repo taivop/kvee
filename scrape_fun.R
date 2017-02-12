@@ -2,8 +2,8 @@ library(dplyr)
 library(rvest)
 library(stringr)
 
-get_coordinates = function(link) {
-  page <- read_html("http://www.kv.ee/?act=object.map&object_id=2680423")
+get_coordinates = function(object_id) {
+  page <- read_html(paste0("http://www.kv.ee/?act=object.map&object_id=", object_id))
   js_text <- page %>% html_node("script") %>% html_text()
   coords <- str_extract(js_text, "(?=LatLng\\().*(?<=\\))") %>% str_sub(8, -2)
   return(coords)
@@ -86,6 +86,8 @@ scrape_page <- function(ad_id) {
   ad[["Korruseid"]] <- ifelse(is.null(features[["Korrus/Korruseid"]]),
                               NA,
                               strsplit(features[["Korrus/Korruseid"]], "/")[[1]][2])
+  ad[["Korruseid"]] <- ifelse(is.na(ad[["Korruseid"]]), features[["Korruseid"]],
+                              ad[["Korruseid"]])
   
   # Date of ad
   ad[["Kuupäev"]] <- regmatches(ad[["Pealkiri"]],
@@ -95,9 +97,18 @@ scrape_page <- function(ad_id) {
     ad[["Kuupäev"]] <- NA
   }
   
+  # Date of scrape
+  ad[["Kraabitud"]] <- Sys.time()
+  
+  # Is the ad active?
+  passive_class_count <- page %>%
+    html_nodes(".object-passive-notice") %>%
+    length()
+  ad[["Aegunud"]] <- min(passive_class_count, 1)
+  
   # Address
   ad[["Aadress"]] <- regmatches(ad[["Pealkiri"]],
-                                regexpr("(?<= - ).*(?= \\()", ad[["Pealkiri"]],
+                                regexpr("(?<= - ).*$", ad[["Pealkiri"]],
                                         perl=TRUE))
   
   if(length(ad[["Aadress"]]) == 0) { # Fallback in case we didn't get an address

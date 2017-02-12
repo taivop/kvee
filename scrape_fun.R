@@ -86,8 +86,10 @@ scrape_page <- function(ad_id) {
   ad[["Korruseid"]] <- ifelse(is.null(features[["Korrus/Korruseid"]]),
                               NA,
                               strsplit(features[["Korrus/Korruseid"]], "/")[[1]][2])
-  ad[["Korruseid"]] <- ifelse(is.na(ad[["Korruseid"]]), features[["Korruseid"]],
-                              ad[["Korruseid"]])
+  if(is.na(ad[["Korruseid"]])) {
+    ad[["Korruseid"]] <- ifelse(is.null(features[["Korruseid"]]), NA,
+                                features[["Korruseid"]])
+  }
   
   # Date of ad
   ad[["Kuupäev"]] <- regmatches(ad[["Pealkiri"]],

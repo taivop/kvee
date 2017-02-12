@@ -72,7 +72,7 @@ for(ad_id_reached in id_start:id_end) {
   })
   
   # Estimate time remaining
-  estimate_frequency <- 5
+  estimate_frequency <- 25
   if((ad_id_reached-id_start) %% estimate_frequency == 0) {
     time_spent <- Sys.time() - time_start
     end_time <- Sys.time() + (id_end-ad_id_reached) * time_spent / estimate_frequency

@@ -7,12 +7,12 @@ library(logging)
 
 # ---- Initial setup ----
 # Read scraping function
-source("scrape_fun.R")
+source("scrape_fun.R", keep.source = TRUE)
 # Setup logging to console
 basicConfig()
 # Profiling
 #profile_filename <- "profile.txt"
-#Rprof(profile_filename)
+#Rprof(profile_filename, line.profiling = TRUE)
 
 # Read start and end ID from command line
 args <- commandArgs(trailingOnly = TRUE)
@@ -103,6 +103,6 @@ tryCatch({
 
 # Summarise profiling
 #Rprof(NULL)
-#summaryRprof(profile_filename)
+#summaryRprof(profile_filename, lines="show")
 
 

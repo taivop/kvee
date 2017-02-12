@@ -4,6 +4,7 @@ library(stringr)
 #library(curl)
 library(httr)
 
+
 download_page <- function(url) {
   res <- GET(url)
   return(read_html(content(res, "text")))
@@ -59,10 +60,8 @@ scrape_page <- function(ad_id) {
   
   features <- list()
   for(trow in table_rows) {
-    #print(trow %>% html_nodes("th"))
     feature_value <- trow %>% html_node("td") %>% html_text() %>%
-      gsub("^\\s+|\\s+$", "", .) %>% gsub("\\s+", " ", .)
-    #print(feature_value)
+      gsub("^\\s+|\\s+$", "", .)%>% gsub("\\s+", " ", .)
     if(feature_value == "Andmed kinnistusraamatust") {
       feature_name <- "KinnistuNr"
       lookup_link <- trow %>% html_node("td a") %>% html_attr("href")

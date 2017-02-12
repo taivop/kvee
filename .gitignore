@@ -3,3 +3,4 @@ data_cleaned/*
 logs/*
 .DS_Store
 .Rhistory
+adhoc/

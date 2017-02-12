@@ -10,6 +10,7 @@ get_coordinates = function(link) {
 }
 
 scrape_page <- function(ad_id) {
+  
   page <- read_html(sprintf("http://www.kv.ee/%d", ad_id))
   
   # Parse data points
@@ -29,41 +30,48 @@ scrape_page <- function(ad_id) {
     gsub("\"", " ", .)
   
   ad$Hind <- page %>%
-    html_node("p.object-price strong") %>%
+    html_node("div.object-price strong") %>%
     html_text() %>%
     gsub("\\s+|€", "", .)
   
   # If coordinates exist
+  ad$Koordinaadid <- NA
   tryCatch({
     gmap_link <- page %>%
       html_node("#gmap_img a") %>%
       html_attr("href")
     map_link = sprintf("http://kv.ee%s", gmap_link)
-    print( get_coordinates(map_link))
-    ad$Koordinaadid = get_coordinates(map_link)
-    print( get_coordinates(map_link))
+    ad$Koordinaadid <- get_coordinates(map_link)
   }, error=function(cond) {
-    ad$Koordinaadid = NA
-  }, warning=function(cond) {}, finally={})
+  }, warning=function(cond) {
+  }, finally={})
   
   table_rows <- page %>%
     html_nodes(".object-data-meta tbody tr")
   
   features <- list()
   for(trow in table_rows) {
-    if(!is.null(trow %>% html_node("th"))) {
+    #print(trow %>% html_nodes("th"))
+    feature_value <- trow %>% html_node("td") %>% html_text() %>%
+      gsub("^\\s+|\\s+$", "", .) %>% gsub("\\s+", " ", .)
+    #print(feature_value)
+    if(feature_value == "Andmed kinnistusraamatust") {
+      feature_name <- "KinnistuNr"
+      lookup_link <- trow %>% html_node("td a") %>% html_attr("href")
+      features[[feature_name]] <- str_extract(lookup_link, "(?<=ukn\\=)\\d*")
+    } else if(feature_value == "Teata ebakorrektsest kuulutusest") {
+      # Nothing to do here
+    } else {
       feature_name <- trow %>% html_node("th") %>% html_text() %>%
-        gsub("^\\s+|\\s+$", "", .) %>% gsub("\\s+", " ", .)
-      feature_value <- trow %>% html_node("td") %>% html_text() %>%
         gsub("^\\s+|\\s+$", "", .) %>% gsub("\\s+", " ", .)
       features[[feature_name]] <- feature_value
     }
   }
   
   for(feature_name in c("Tube", "Üldpind", "Seisukord", "Energiamärgis",
-                        "Ehitusaasta")) {
+                        "Ehitusaasta", "KinnistuNr")) {
     if(is.null(features[[feature_name]]))
-       ad[[feature_name]] <- NA
+      ad[[feature_name]] <- NA
     else
       ad[[feature_name]] <- features[[feature_name]]
   }
@@ -76,22 +84,33 @@ scrape_page <- function(ad_id) {
                            NA,
                            strsplit(features[["Korrus/Korruseid"]], "/")[[1]][1])
   ad[["Korruseid"]] <- ifelse(is.null(features[["Korrus/Korruseid"]]),
-                           NA,
-                           strsplit(features[["Korrus/Korruseid"]], "/")[[1]][2])
+                              NA,
+                              strsplit(features[["Korrus/Korruseid"]], "/")[[1]][2])
   
   # Date of ad
   ad[["Kuupäev"]] <- regmatches(ad[["Pealkiri"]],
                                 regexpr("(\\d\\d\\.\\d\\d\\.\\d\\d)",
                                         ad[["Pealkiri"]]))
+  if(length(ad[["Kuupäev"]]) == 0) {
+    ad[["Kuupäev"]] <- NA
+  }
   
   # Address
   ad[["Aadress"]] <- regmatches(ad[["Pealkiri"]],
                                 regexpr("(?<= - ).*(?= \\()", ad[["Pealkiri"]],
                                         perl=TRUE))
-  address_split <- strsplit(ad[["Aadress"]], ", ")
-  address_split
+  
+  if(length(ad[["Aadress"]]) == 0) { # Fallback in case we didn't get an address
+    cna <- c(NA, NA, NA, NA)
+    address_split <- list(cna, cna, cna, cna)
+    ad["Aadress"] <- NA
+  } else {
+    address_split <- strsplit(ad[["Aadress"]], ", ")
+  }
+
   for(i in 1:4) {
     if(length(address_split[[1]]) < 4) {
+      print("replacing")
       address_split[[1]] <- c(rep(c(NA), 4-length(address_split[[1]])), address_split[[1]])
     }
     field_name <- sprintf("Aadress.%d", i)

@@ -77,7 +77,7 @@ scrape_page <- function(ad_id) {
   }
   
   # Type of ad
-  ad[["Tüüp"]] <- names(features)[[1]]
+  ad[["Tüüp"]] <- ifelse(length(features) == 0, "Kustutatud", names(features)[[1]])
   
   # Floors
   ad[["Korrus"]] <- ifelse(is.null(features[["Korrus/Korruseid"]]),

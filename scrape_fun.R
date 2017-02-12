@@ -123,7 +123,7 @@ scrape_page <- function(ad_id) {
 
   for(i in 1:4) {
     if(length(address_split[[1]]) < 4) {
-      print("replacing")
+      #print("replacing")
       address_split[[1]] <- c(rep(c(NA), 4-length(address_split[[1]])), address_split[[1]])
     }
     field_name <- sprintf("Aadress.%d", i)

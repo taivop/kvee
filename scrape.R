@@ -38,6 +38,7 @@ save_every_n <- 3000
 
 # ---- Main loop ----
 loginfo("Started fetching ads...")
+time_start <- Sys.time()
 for(ad_id_reached in id_start:id_end) {
   loginfo(sprintf("Scraping %d (%d/%d)", ad_id_reached, ad_id_reached-id_start+1,
                 id_end-id_start+1))
@@ -69,6 +70,15 @@ for(ad_id_reached in id_start:id_end) {
   }, warning=function(w) {
     logerror(sprintf("Warning saving at checkpoint %d: %s", ad_id_reached, w))
   })
+  
+  # Estimate time remaining
+  estimate_frequency <- 5
+  if((ad_id_reached-id_start) %% estimate_frequency == 0) {
+    time_spent <- Sys.time() - time_start
+    end_time <- Sys.time() + (id_end-ad_id_reached) * time_spent / estimate_frequency
+    loginfo(sprintf("Expected end: %s", end_time))
+    time_start <- Sys.time()
+  }
 }
 loginfo("Done.")
 

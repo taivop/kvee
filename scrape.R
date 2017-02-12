@@ -10,6 +10,9 @@ library(logging)
 source("scrape_fun.R")
 # Setup logging to console
 basicConfig()
+# Profiling
+#profile_filename <- "profile.txt"
+#Rprof(profile_filename)
 
 # Read start and end ID from command line
 args <- commandArgs(trailingOnly = TRUE)
@@ -87,5 +90,9 @@ tryCatch({
 }, warning=function(w) {
   logwarn(w)
 })
+
+# Summarise profiling
+#Rprof(NULL)
+#summaryRprof(profile_filename)
 
 

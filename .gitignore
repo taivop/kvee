@@ -4,3 +4,4 @@ logs/*
 .DS_Store
 .Rhistory
 adhoc/
+profile.txt

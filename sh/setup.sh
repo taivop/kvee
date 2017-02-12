@@ -1,7 +1,7 @@
-sudo apt-get update
-sudo apt-get install libopenblas-base 
-sudo apt-get install littler
-sudo apt-get install libssl-dev libcurl4-openssl-dev libxml2-dev
+sudo apt-get -y update
+sudo apt-get -y install libopenblas-base 
+sudo apt-get -y install littler
+sudo apt-get -y install libssl-dev libcurl4-openssl-dev libxml2-dev
 
 # Add CRAN source
 sudo sh -c 'echo "deb http://cran.rstudio.com/bin/linux/ubuntu trusty/" >> /etc/apt/sources.list'
